@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+set -e
+
+# Close any open System Preferences panes, to prevent them from overriding
+# settings we’re about to change
+osascript -e 'tell application "System Preferences" to quit'
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `.macos` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Set computer name (as done via System Preferences → Sharing)
+sudo scutil --set ComputerName "gkmbp"
+sudo scutil --set HostName "gkmbp"
+sudo scutil --set LocalHostName "gkmbp"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "gkmbp"
+
+#
+# Do not prompt admins for sudo password and add current user to admins
+#
+echo '%admin ALL = (ALL) NOPASSWD:ALL' | sudo tee -a /private/etc/sudoers.d/admin
+sudo dseditgroup -o edit -a "${USER}" -t user admin
+
+#
+# Dock
+#
+# Autohide
+defaults write com.apple.dock autohide -bool true
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Icon size
+defaults write com.apple.dock tilesize -int 50
+
+# Clear out all apps from Dock
+defaults write com.apple.dock persistent-apps -array
+
+# Minimize windows into their application’s icon
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Speed up Mission Control animations
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Restart Dock
+killall Dock
+
+#
+# Finder
+#
+# Use list view in all Finder windows by default
+# Four-letter codes for the other view modes: `icnv`, `clmv`, `Flwv`
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Show the ~/Library folder
+chflags nohidden ~/Library
+
+# Show the /Volumes folder
+sudo chflags nohidden /Volumes
+
+# Install Command Line Tools for Xcode
+touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+sudo softwareupdate -ai
+rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+
+# Yep
+mkdir ~/.ssh
+ssh-keyscan github.com > ~/.ssh/known_hosts
+ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs/Secrets/id_rsa ~/.ssh/id_rsa
+chmod 0600 ~/.ssh/id_rsa
+
+git clone git@github.com:gkze/setup.git ~/.dots
+
+# Toggle Dark Mode
+if ! (defaults read NSGlobalDomain | grep -q AppleInterfaceStyle) || [[ "$(defaults read NSGlobalDomain AppleInterfaceStyle)" != "Dark" ]]; then
+  osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to not dark mode'
+fi
+
+# Set base16-default.dark.256 as the Terminal color scheme
+osascript <<EOF
+tell application "Terminal"
+  local allOpenedWindows
+  local initialOpenedWindows
+  local windowID
+  set themeName to "base16-default.dark.256"
+  (* Store the IDs of all the open terminal windows. *)
+  set initialOpenedWindows to id of every window
+  (* Open the custom theme so that it gets added to the list
+     of available terminal themes (note: this will open two
+     additional terminal windows). *)
+  do shell script "open $HOME/.dots/" & themeName & ".terminal"
+  (* Wait a little bit to ensure that the custom theme is added. *)
+  delay 1
+  (* Set the custom theme as the default terminal theme. *)
+  set default settings to settings set themeName
+  (* Get the IDs of all the currently opened terminal windows. *)
+  set allOpenedWindows to id of every window
+  repeat with windowID in allOpenedWindows
+    (* Close the additional windows that were opened in order
+       to add the custom theme to the list of terminal themes. *)
+    if initialOpenedWindows does not contain windowID then
+      close (every window whose id is windowID)
+    (* Change the theme for the initial opened terminal windows
+       to remove the need to close them in order for the custom
+       theme to be applied. *)
+    else
+      set current settings of tabs of (every window whose id is windowID) to settings set themeName
+    end if
+  end repeat
+end tell
+EOF
+
+# Tmux needs this to work
+sudo mkdir /usr/local/bin
+# shellcheck disable=SC2016
+echo 'PATH=/usr/local/bin:$PATH /usr/local/bin/tmux' | sudo tee /usr/local/bin/tmux-helper
+sudo chmod +x /usr/local/bin/tmux-helper
+
+# Install Homebrew
+echo -e '\n' | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# Install brew packages
+(cd ~/.dots && brew bundle)
+
+# Install python packages
+(cd ~/.dots && sudo -H pip2 install -Ur requirements.txt)
+
+# Create config directory
+mkdir ~/.config
+
+# Install fzf
+/usr/local/opt/fzf/install --all --no-update-rc
+
+# Link confguration files
+ln -sf ~/.dots/.zshrc ~/.zshrc
+ln -sf ~/.dots/.tmux.conf ~/.tmux.conf
+ln -sf ~/.dots/powerline ~/.config/powerline
+ln -sf ~/.dots/nvim ~/.config/nvim
+
+# Install vim-plug
+curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+# Terminal settings
+cp -f ~/.dots/com.apple.Terminal.plist ~/Library/Preferences/
+
+# Set up tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# Install Neovim plugins
+nvim +PlugInstall +qall
+
+# Clean up
+rm -rf .CFUserTextEncoding .DS_Store .bash* .fzf.bash .lesshst .subversion

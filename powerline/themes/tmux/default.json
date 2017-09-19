@@ -1,0 +1,18 @@
+{
+  "segments": {
+    "right": [
+      {
+        "function": "powerline.segments.common.sys.system_load"
+      },
+      {
+        "function": "powerline.segments.common.time.date",
+        "args": {
+          "format": "%Y-%m-%d %I:%M %p"
+        }
+      },
+      {
+        "function": "powerline.segments.common.bat.battery"
+      }
+    ]
+  }
+}

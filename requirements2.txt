@@ -1,0 +1,8 @@
+bzr
+jedi
+neovim
+powerline-status
+psutil
+pygit2
+python-hglib
+pyuv
