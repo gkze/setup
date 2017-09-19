@@ -1,3 +1,6 @@
 [user]
 	name = gkze
 	email = george.kontridze@gmail.com
+	signingkey = C0D2F08D
+[commit]
+	gpgsign = true
