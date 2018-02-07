@@ -100,14 +100,6 @@ cask "taskr"
 cask "vlc"
 cask "wwdc"
 cask "caskroom/fonts/font-source-code-pro-for-powerline"
-mas "GarageBand", id: 682658836
-mas "iMovie", id: 408981434
-mas "Keynote", id: 409183694
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
-mas "Reeder", id: 880001334
-mas "Server", id: 883878097
-mas "Xcode", id: 497799835
 
 unless `hostname`.strip == 'gkambp'
   cask "beatport-pro"
