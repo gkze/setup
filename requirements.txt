@@ -1,0 +1,6 @@
+httpie
+isort
+neovim
+powerline-status
+python-language-server
+pyuv
