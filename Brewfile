@@ -70,8 +70,6 @@ brew "z"
 brew "zplug", args: ["with-zsh"]
 brew "zsh"
 brew "jez/formulae/git-heatmap"
-brew "sre-tools/sretools/radar-cli"
-brew "sre-tools/sretools/sprox"
 cask "1password"
 cask "adium"
 cask "aerial"
