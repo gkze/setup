@@ -3,6 +3,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " Plugins
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'cespare/vim-toml'
 Plug 'chriskempson/base16-vim'
 Plug 'fisadev/vim-isort'
 Plug 'junegunn/vim-easy-align'
@@ -53,9 +54,9 @@ set nowb
 " Indentation
 set autoindent
 set smarttab
-set shiftwidth=2
+set shiftwidth=4
 set softtabstop=2
-set tabstop=2
+set tabstop=4
 set expandtab
 
 " Search
