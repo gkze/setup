@@ -19,8 +19,7 @@ zplug "lib/key-bindings",                  from:oh-my-zsh
 zplug "plugins/docker",                    from:oh-my-zsh, if:"(( $+commands[docker] ))"
 zplug "plugins/docker-compose",            from:oh-my-zsh, if:"(( $+commands[docker-compose] ))"
 zplug "plugins/httpie",                    from:oh-my-zsh, if:"(( $+commands[http] ))"
-zplug "plugins/pip",                       from:oh-my-zsh, if:"(( $+commands[pip2] ))"
-zplug "plugins/asdf",                      from:oh-my-zsh, if:"(( $+commands[asdf] ))"
+zplug "plugins/pip",                       from:oh-my-zsh, if:"(( $+commands[pip3] ))"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
@@ -37,6 +36,9 @@ fi
 
 # Then, source plugins and add commands to $PATH
 zplug load
+
+# Extra completions
+fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Fuzzy finder
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -67,8 +69,6 @@ export GOPATH="${HOME}/Development/go"
 alias git='hub'
 alias l='exa -agl --color=always'
 alias g='git'
-
-source "/usr/local/opt/asdf/asdf.sh"
 
 # Pipenv completion
 if which pipenv >/dev/null; then

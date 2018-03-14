@@ -123,9 +123,6 @@ echo -e '\n' | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/
 # Install brew packages
 (cd ~/.dots && brew bundle)
 
-# Install python packages
-(cd ~/.dots && sudo -H pip2 install -Ur requirements.txt)
-
 # Create config directory
 mkdir ~/.config
 
