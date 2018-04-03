@@ -124,7 +124,7 @@ echo -e '\n' | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/
 (cd ~/.dots && brew bundle)
 
 # Create config directory
-mkdir ~/.config
+mkdir -p ~/.config
 
 # Install fzf
 /usr/local/opt/fzf/install --all --no-update-rc

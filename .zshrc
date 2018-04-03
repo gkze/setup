@@ -7,6 +7,7 @@ autoload run-help
 export HELPDIR="/usr/local/share/zsh/help"
 
 export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
+export EDITOR="nvim"
 
 # Initialize zplug
 export ZPLUG_HOME="/usr/local/opt/zplug"
@@ -58,6 +59,10 @@ export MANPATH="/usr/local/opt/findutils/libexec/gnuman:$MANPATH"
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 export MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 
+# GNU tar
+export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"
+export MANPATH="/usr/local/opt/gnu-tar/libexec/gnuman:$MANPATH"
+
 # Google Cloud SDK
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
@@ -89,3 +94,5 @@ export PATH="${HOME}/.cargo/bin:${PATH}"
 export PATH="${HOME}/.local/bin:${PATH}"
 
 function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
+
+eval "$(direnv hook ${SHELL})"
