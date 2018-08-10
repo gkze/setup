@@ -112,7 +112,7 @@ end tell
 EOF
 
 # Tmux needs this to work
-sudo mkdir /usr/local/bin
+sudo mkdir -p /usr/local/bin
 # shellcheck disable=SC2016
 echo 'PATH=/usr/local/bin:$PATH /usr/local/bin/tmux' | sudo tee /usr/local/bin/tmux-helper
 sudo chmod +x /usr/local/bin/tmux-helper

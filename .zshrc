@@ -1,5 +1,5 @@
 # Powerline prompt
-source "/usr/local/lib/python3.6/site-packages/powerline/bindings/zsh/powerline.zsh"
+source "/usr/local/lib/python3.7/site-packages/powerline/bindings/zsh/powerline.zsh"
 
 # Online ZSH help
 unalias run-help 2>/dev/null
@@ -69,6 +69,7 @@ source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.
 
 # Golang
 export GOPATH="${HOME}/Development/go"
+export PATH="${GOPATH}/bin:${PATH}"
 
 # Aliases
 alias git='hub'
