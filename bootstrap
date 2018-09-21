@@ -11,11 +11,13 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+HOSTNAME="gkmbp"
+
 # Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "gkmbp"
-sudo scutil --set HostName "gkmbp"
-sudo scutil --set LocalHostName "gkmbp"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "gkmbp"
+sudo scutil --set ComputerName "${HOSTNAME}"
+sudo scutil --set HostName "${HOSTNAME}"
+sudo scutil --set LocalHostName "${HOSTNAME}"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "${HOSTNAME}"
 
 #
 # Do not prompt admins for sudo password and add current user to admins
@@ -69,84 +71,29 @@ mkdir ~/.ssh
 ssh-keyscan github.com > ~/.ssh/known_hosts
 ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs/Secrets/id_rsa ~/.ssh/id_rsa
 chmod 0600 ~/.ssh/id_rsa
+ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 
-git clone git@github.com:gkze/setup.git ~/.dots
-
-# Toggle Dark Mode
-if ! (defaults read NSGlobalDomain | grep -q AppleInterfaceStyle) || [[ "$(defaults read NSGlobalDomain AppleInterfaceStyle)" != "Dark" ]]; then
-  osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to not dark mode'
-fi
-
-# Set base16-default.dark.256 as the Terminal color scheme
-osascript <<EOF
-tell application "Terminal"
-  local allOpenedWindows
-  local initialOpenedWindows
-  local windowID
-  set themeName to "base16-default.dark.256"
-  (* Store the IDs of all the open terminal windows. *)
-  set initialOpenedWindows to id of every window
-  (* Open the custom theme so that it gets added to the list
-     of available terminal themes (note: this will open two
-     additional terminal windows). *)
-  do shell script "open $HOME/.dots/" & themeName & ".terminal"
-  (* Wait a little bit to ensure that the custom theme is added. *)
-  delay 1
-  (* Set the custom theme as the default terminal theme. *)
-  set default settings to settings set themeName
-  (* Get the IDs of all the currently opened terminal windows. *)
-  set allOpenedWindows to id of every window
-  repeat with windowID in allOpenedWindows
-    (* Close the additional windows that were opened in order
-       to add the custom theme to the list of terminal themes. *)
-    if initialOpenedWindows does not contain windowID then
-      close (every window whose id is windowID)
-    (* Change the theme for the initial opened terminal windows
-       to remove the need to close them in order for the custom
-       theme to be applied. *)
-    else
-      set current settings of tabs of (every window whose id is windowID) to settings set themeName
-    end if
-  end repeat
-end tell
-EOF
-
-# Tmux needs this to work
-sudo mkdir -p /usr/local/bin
-# shellcheck disable=SC2016
-echo 'PATH=/usr/local/bin:$PATH /usr/local/bin/tmux' | sudo tee /usr/local/bin/tmux-helper
-sudo chmod +x /usr/local/bin/tmux-helper
-
-# Install Homebrew
-echo -e '\n' | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-# Install brew packages
-(cd ~/.dots && brew bundle)
-
-# Create config directory
-mkdir -p ~/.config
-
-# Install fzf
-/usr/local/opt/fzf/install --all --no-update-rc
-
-# Link confguration files
-ln -sf ~/.dots/.zshrc ~/.zshrc
-ln -sf ~/.dots/.tmux.conf ~/.tmux.conf
-ln -sf ~/.dots/powerline ~/.config/powerline
-ln -sf ~/.dots/nvim ~/.config/nvim
-
-# Install vim-plug
+# vim-plug
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-# Terminal settings
-cp -f ~/.dots/com.apple.Terminal.plist ~/Library/Preferences/
-
-# Set up tmux
+# tpm
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-# Install Neovim plugins
-nvim +PlugInstall +qall
+# Clone down dots
+git clone git@github.com:gkze/setup.git ~/.dots
 
-# Clean up
-rm -rf .CFUserTextEncoding .DS_Store .bash* .fzf.bash .lesshst .subversion
+(cd ~/.dots && brew bundle)
+
+ln -s ~/.dots/.zshrc ~
+ln -s ~/.dots/.tmux.conf ~
+
+mkdir -p ~/.config
+
+ln -s ~/.dots/nvim ~/.config/nvim
+ln -s ~/.dots/powerline ~/.config/powerline
+
+pip3 install -U powerline-status neovim
+nvim +PlugInstall +UpdateRemotePlugins +qall
+
+echo 'PATH=/usr/local/bin:$PATH /usr/local/bin/tmux' > /usr/local/bin/tmux-helper
+chmod +x /usr/local/bin/tmux-helper
