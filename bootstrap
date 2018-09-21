@@ -82,6 +82,9 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Clone down dots
 git clone git@github.com:gkze/setup.git ~/.dots
 
+# Install Homebrew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
 (cd ~/.dots && brew bundle)
 
 ln -s ~/.dots/.zshrc ~
