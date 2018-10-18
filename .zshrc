@@ -39,10 +39,12 @@ fi
 zplug load
 
 # Extra completions
-fpath=(/usr/local/share/zsh-completions $fpath)
+fpath=(~/.zfunc /usr/local/share/zsh-completions ${fpath})
 
 # Fuzzy finder
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export GPG_TTY="$(tty)"
 
 # Z
 source "/usr/local/etc/profile.d/z.sh"
