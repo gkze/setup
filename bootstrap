@@ -68,8 +68,16 @@ sudo softwareupdate -ai
 rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 
 # Yep
-mkdir ~/.ssh
-ssh-keyscan github.com > ~/.ssh/known_hosts
+mkdir -p ~/.ssh
+cat > ~/.ssh/config <<-EOF
+AddKeysToAgent yes
+ForwardAgent yes
+IdentityFile ~/.ssh/id_rsa
+LogLevel ERROR
+StrictHostKeyChecking no
+UseKeyChain yes
+UserKnownHostsfile /dev/null
+EOF
 ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs/Secrets/id_rsa ~/.ssh/id_rsa
 chmod 0600 ~/.ssh/id_rsa
 ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
@@ -89,6 +97,7 @@ git clone git@github.com:gkze/setup.git ~/.dots
 (cd ~/.dots && brew bundle)
 
 ln -s ~/.dots/.zshrc ~
+ln -s ~/.dots/.zshenv ~
 ln -s ~/.dots/.tmux.conf ~
 
 mkdir -p ~/.config

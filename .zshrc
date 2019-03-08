@@ -4,10 +4,6 @@ source "/usr/local/lib/python3.7/site-packages/powerline/bindings/zsh/powerline.
 # Online ZSH help
 unalias run-help 2>/dev/null
 autoload run-help
-export HELPDIR="/usr/local/share/zsh/help"
-
-export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
-export EDITOR="nvim"
 
 # Initialize zplug
 export ZPLUG_HOME="/usr/local/opt/zplug"
@@ -23,7 +19,6 @@ zplug "plugins/httpie",                    from:oh-my-zsh, if:"(( $+commands[htt
 zplug "plugins/pip",                       from:oh-my-zsh, if:"(( $+commands[pip3] ))"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
-
 # Let zplug manage itself
 zplug "zplug/zplug"
 
@@ -39,44 +34,23 @@ fi
 zplug load
 
 # Extra completions
-fpath=(~/.zfunc /usr/local/share/zsh-completions ${fpath})
+fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Fuzzy finder
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-export GPG_TTY="$(tty)"
-
 # Z
 source "/usr/local/etc/profile.d/z.sh"
-
-# GNU Coreutils
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
-
-# GNU Findutils
-export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/findutils/libexec/gnuman:$MANPATH"
-
-# GNU sed
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
-
-# GNU tar
-export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"
-export MANPATH="/usr/local/opt/gnu-tar/libexec/gnuman:$MANPATH"
 
 # Google Cloud SDK
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
-# Golang
-export GOPATH="${HOME}/Development/go"
-export PATH="${GOPATH}/bin:${PATH}"
-
 # Aliases
 alias git='hub'
-alias l='exa -agl --color=always'
 alias g='git'
+alias k='kubectl'
+alias l='exa -agl --color=always'
 
 # Pipenv completion
 if which pipenv >/dev/null; then
@@ -90,12 +64,7 @@ if which pipenv >/dev/null; then
     fi
 fi
 
-# Rust
-export PATH="${HOME}/.cargo/bin:${PATH}"
-
-# Python-IDE for Atom
-export PATH="${HOME}/.local/bin:${PATH}"
-
 function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
 
+# direnv
 eval "$(direnv hook ${SHELL})"
