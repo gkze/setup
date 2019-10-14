@@ -17,6 +17,7 @@ zplug "plugins/docker",                    from:oh-my-zsh, if:"(( $+commands[doc
 zplug "plugins/docker-compose",            from:oh-my-zsh, if:"(( $+commands[docker-compose] ))"
 zplug "plugins/httpie",                    from:oh-my-zsh, if:"(( $+commands[http] ))"
 zplug "plugins/pip",                       from:oh-my-zsh, if:"(( $+commands[pip3] ))"
+zplug "plugins/terraform",                 from:oh-my-zsh, if:"(( $+commands[terraform] ))"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 # Let zplug manage itself
@@ -34,7 +35,7 @@ fi
 zplug load
 
 # Extra completions
-fpath=(/usr/local/share/zsh-completions $fpath)
+fpath=(/usr/local/share/zsh-completions ~/.zfunc $fpath)
 
 # Fuzzy finder
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -64,7 +65,18 @@ if which pipenv >/dev/null; then
     fi
 fi
 
-function gi() { curl -L -s https://www.gitignore.io/api/$@ ;}
+# Gitignore utility
+function gi() { curl -sL https://www.gitignore.io/api/$@ | tail -n+5 | head -n-2 ;}
+
+# JSON AWS CLI output
+function jaws() { aws "$@" | jq -Cr '.' | bat }
 
 # direnv
 eval "$(direnv hook ${SHELL})"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/Cellar/terraform/0.11.13/bin/terraform terraform
+
+. $HOME/.asdf/asdf.sh
+
+. $HOME/.asdf/completions/asdf.bash
